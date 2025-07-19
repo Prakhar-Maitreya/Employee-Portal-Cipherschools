@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white text-center">
+                <h4>My Profile</h4>
+            </div>
+            <div class="card-body">
+                {% if employee %}
+                    <p><strong>Name:</strong> {{ employee.name }}</p>
+                    <p><strong>Role:</strong> {{ employee.role.name }}</p>
+                    <p><strong>Departments:</strong>
+                        {% for dept in employee.department.all %}
+                            <span class="badge bg-info text-dark">{{ dept.name }}</span>
+                        {% empty %}
+                            <span class="text-muted">None</span>
+                        {% endfor %}
+                    </p>
+                {% else %}
+                    <p class="text-danger text-center">No employee record linked to your account.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

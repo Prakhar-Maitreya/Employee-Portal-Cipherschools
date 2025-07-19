@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-secondary text-white text-center">
+                <h4>Employee List</h4>
+            </div>
+            <div class="card-body">
+
+                <!-- Add Buttons -->
+                {% if user.is_superuser %}
+                <div class="d-flex justify-content-between mb-3">
+                    <a href="{% url 'add_employee' %}" class="btn btn-success">+ Add Employee</a>
+                    <a href="{% url 'add_department' %}" class="btn btn-warning">+ Add Department</a>
+                </div>
+                {% endif %}
+
+                <!-- Filter Form -->
+                <form method="get" class="row g-3 mb-4">
+                    <div class="col-md-8">
+                        <select name="department" class="form-select">
+                            <option value="">All Departments</option>
+                            {% for dept in departments %}
+                                <option value="{{ dept.id }}" {% if request.GET.department == dept.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ dept.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4 d-grid">
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                    </div>
+                </form>
+
+                <!-- Employee List -->
+                {% if employees %}
+                    <ul class="list-group">
+                        {% for employee in employees %}
+                            <li class="list-group-item">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <strong>{{ employee.name }}</strong><br>
+                                        Email: {{ employee.email }}<br>
+                                        Phone: {{ employee.phone_number }}<br>
+                                        Departments:
+                                        {% for dept in employee.department.all %}
+                                            <span class="badge bg-info text-dark">{{ dept.name }}</span>
+                                        {% endfor %}
+                                        {% if employee.role %}
+                                            <br>Role: {{ employee.role.name }}
+                                        {% endif %}
+                                    </div>
+                                    <div class="text-end">
+                                        {% if user.is_superuser or employee.user == request.user %}
+                                            <a href="{% url 'edit_employee' employee.id %}" class="btn btn-sm btn-outline-primary mb-1">Edit</a>
+                                        {% endif %}
+                                        {% if user.is_superuser %}
+                                            <a href="{% url 'delete_employee' employee.id %}" class="btn btn-sm btn-outline-danger mb-1">Delete</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-center text-muted">No employees found.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
